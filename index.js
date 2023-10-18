@@ -1,7 +1,7 @@
 
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion , ObjectId } = require('mongodb');
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 
@@ -31,8 +31,6 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    // const database = client.db("insertDB");
-    // const haiku = database.collection("haiku");
 
     const productCollection = client.db("productDB").collection("products");
 
@@ -43,6 +41,51 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+
+
+    // get single data for update
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id", id);
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await productCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
+    // update single data
+    app.put("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = req.body;
+
+      const filter = {
+        _id: new ObjectId(id),
+      };
+      const options = { upsert: true };
+      const updatedData = {
+        $set: {
+          image: product.image,
+          name: product.name,
+          type: product.type,
+          price: product.price,
+          brand: product.optionBrand,
+          rating: product.rating,
+          description: product.description
+        },
+      };
+      const result = await productCollection.updateOne(
+        filter,
+        updatedData,
+        options
+      );
+      res.send(result);
+    });
+
+
+
+
 
     // get product
     app.get("/products", async (req, res) => {
