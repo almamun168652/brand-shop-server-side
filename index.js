@@ -1,7 +1,7 @@
 
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion , ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 
@@ -33,11 +33,39 @@ async function run() {
 
 
     const productCollection = client.db("productDB").collection("products");
+    const cartCollection = client.db("productDB").collection("carts");
+
 
     // add product
     app.post("/products", async (req, res) => {
       const product = req.body;
       const result = await productCollection.insertOne(product);
+      console.log(result);
+      res.send(result);
+    });
+
+    // add carts
+    app.post("/carts", async (req, res) => {
+      const carts = req.body;
+      delete carts._id;
+      const result = await cartCollection.insertOne(carts);
+      console.log(result);
+      res.send(result);
+    });
+
+    // get carts
+    app.get("/carts", async (req, res) => {
+      const result = await cartCollection.find().toArray();
+      res.send(result);
+    });
+
+    // delete one cart
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await cartCollection.deleteOne(query);
       console.log(result);
       res.send(result);
     });
@@ -108,11 +136,11 @@ run().catch(console.dir);
 
 
 app.get("/", (req, res) => {
-    res.send("Crud is running...");
+  res.send("Crud is running...");
 });
 
 
 app.listen(port, () => {
-    console.log(`Simple Crud is Running on port ${port}`);
+  console.log(`Simple Crud is Running on port ${port}`);
 });
 
