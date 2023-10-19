@@ -9,12 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// brandShop
-// 8s9mQfjTEOjdqvIm
-
-
-
-
 const uri = "mongodb+srv://brandShop:8s9mQfjTEOjdqvIm@cluster0.ywavnlw.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
